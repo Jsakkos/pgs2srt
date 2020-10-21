@@ -79,6 +79,6 @@ def make_image(ods, pds, swap=False):
     px, rgb, a = px_rgb_a(ods, pds, swap)
     alpha = Image.fromarray(a, mode='L')
     img = Image.fromarray(px, mode='P')
-    img.putpalette(rgb)
     img.putalpha(alpha)
+    img.putpalette(rgb)
     return img
