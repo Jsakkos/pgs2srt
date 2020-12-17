@@ -15,13 +15,12 @@ parser = argparse.ArgumentParser(description='Convert PGS subtitles to SubRip fo
 
 parser.add_argument('input', type=str, help="The input file (a .sup file).")
 parser.add_argument('--output', type=str, help="The output file (a .srt file).")
-parser.add_argument('--oem', type=int, help="The OCR Engine Mode to use (Default: 1).", default=1)
+parser.add_argument('--oem', type=int, help="The OCR Engine Mode to use (Default: 1).", default=1, choices=range(0, 4))
 parser.add_argument('--language', type=str, help="The language to use (Default: eng).", default='eng')
 
 args = parser.parse_args()
 
 assert args.input is not None
-assert 0 <= args.oem <= 4
 
 # Unescape escaped spaces
 file = args.input.replace("\\ ", " ")
