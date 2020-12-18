@@ -7,6 +7,8 @@ from PIL import Image, ImageOps
 
 from datetime import datetime, timedelta
 
+from Libraries.SubZero.dictionaries.data import data
+from Libraries.SubZero.post_processing import CommonFixes, FixOCR
 from pgsreader import PGSReader
 from imagemaker import make_image
 
@@ -17,6 +19,10 @@ parser.add_argument('input', type=str, help="The input file (a .sup file).")
 parser.add_argument('--output', type=str, help="The output file (a .srt file).")
 parser.add_argument('--oem', type=int, help="The OCR Engine Mode to use (Default: 1).", default=1, choices=range(0, 4))
 parser.add_argument('--language', type=str, help="The language to use (Default: eng).", default='eng')
+parser.add_argument('--fix_common', help='Fixes common whitespace/punctuation issues.',
+                    dest='fix_common', action='store_true')
+parser.add_argument('--fix_common_ocr', help='Fixes common OCR issues for supported languages.',
+                    dest='fix_ocr', action='store_true')
 
 args = parser.parse_args()
 
@@ -46,6 +52,9 @@ output_file = args.output if args.output is not None else (args.input.replace('.
 
 # SubRip output
 output = ""
+
+fix_common = CommonFixes() if args.fix_common else None
+fix_ocr = FixOCR(args.language) if args.fix_ocr else None
 
 # Iterate the pgs generator
 for ds in pgs.iter_displaysets():
@@ -77,11 +86,10 @@ for ds in pgs.iter_displaysets():
                 text = re.sub(r'[|/\\]', 'I', text)
                 text = re.sub(r'[_]', 'L', text)
 
-                # If text could not be parsed, open imaged and exit
-                # if len(text) == 0:
-                #     img.show()
-                #     sys.exit()
-                #     break
+                if args.fix_common:
+                    text = fix_common.process(text)
+                if args.fix_ocr:
+                    text = fix_ocr.modify(text)
 
                 start = datetime.fromtimestamp(ods.presentation_timestamp/1000)
                 start = start + timedelta(hours=-1)
@@ -109,7 +117,7 @@ for ds in pgs.iter_displaysets():
         print(e)
         exit(1)
 
-print("Saving to: {}".format(output_file))
 f = open(output_file, "w")
 f.write(output)
 f.close()
+print("Saved to: {}".format(output_file))
