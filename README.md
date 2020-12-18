@@ -6,7 +6,7 @@ Uses [pgsreader](https://github.com/EzraBC/pgsreader) and [pyteseract](https://p
 Python3 and pip3
 
 ## Installation
-* Run ```git clone https://github.com/nordqvist/pgs2srt.git```
+* Run ```git clone https://github.com/PimvanderLoos/pgs2srt.git```
 * Inside the repo folder, run ```pip3 install -r requirements.txt```
 * In your .bashrc or .zshrc add ```alias pgs2srt='<absolute path to repo>/pgs2srt.py'```
 
