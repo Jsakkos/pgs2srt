@@ -46,7 +46,7 @@ def read_rle_bytes(ods_bytes):
                         
 def ycbcr2rgb(ar):
     xform = np.array([[1, 0, 1.402], [1, -0.34414, -.71414], [1, 1.772, 0]])
-    rgb = ar.astype(np.float)
+    rgb = ar.astype(float)
     # Subtracting by 128 the R and G channels
     rgb[:,[1,2]] -= 128
     #.dot is multiplication of the matrices and xform.T is a transpose of the array axes
@@ -66,9 +66,11 @@ def px_rgb_a(ods, pds, swap):
         ycbcr = np.array([(entry.Y, entry.Cb, entry.Cr) for entry in pds.palette])
     else:
         ycbcr = np.array([(entry.Y, entry.Cr, entry.Cb) for entry in pds.palette])
-    
-    rgb = ycbcr2rgb(ycbcr)
-    
+    try:
+        rgb = ycbcr2rgb(ycbcr)
+    except AttributeError:
+        print("Error: The image is not in YCbCr format.")
+        exit(1)
     # Separate the Alpha channel from the YCbCr palette data
     a = [entry.Alpha for entry in pds.palette]
     a = np.array([[a[x] for x in l] for l in px], dtype=np.uint8)
